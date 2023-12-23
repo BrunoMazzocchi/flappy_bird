@@ -1,16 +1,10 @@
-# flappy_bird
+# Flutter Flappy Bird
 
-A new Flutter project.
+A new Flutter Flame tutorial 
 
-## Getting Started
+Flutter Flappy Bird is a basic Flame engine's app that simulates the famous game "Flappy Bird"
 
-This project is a starting point for a Flutter application.
+To achieve it I follow [this tutorial](https://www.youtube.com/watch?v=zcs8qRBRz7w)
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+[flutter_bird.webm](https://github.com/BrunoMazzocchi/flappy_bird/assets/68037905/020d2af5-669b-47c3-9188-c1cc14005320)
