@@ -1,6 +1,8 @@
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/flame.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flappy_bird/game/assets.dart';
 import 'package:flappy_bird/game/bird_movement.dart';
 import 'package:flappy_bird/game/configuration.dart';
@@ -8,7 +10,8 @@ import 'package:flappy_bird/game/flappy_bird_game.dart';
 import 'package:flutter/animation.dart';
 
 /// This represents the player [Bird] in the game.
-class Bird extends SpriteGroupComponent<BirdMovement> with HasGameRef<FlappyBirdGame>{
+class Bird extends SpriteGroupComponent<BirdMovement>
+    with HasGameRef<FlappyBirdGame>, CollisionCallbacks {
   /// Constructor
   Bird();
 
@@ -19,6 +22,7 @@ class Bird extends SpriteGroupComponent<BirdMovement> with HasGameRef<FlappyBird
     final birdDownFlapSprite = await Flame.images.load(birdDownFlap);
 
     size = Vector2(50, 40);
+
     /// The bird starts at the middle of the screen.
     /// The size of the bird is 50x40.
     position = Vector2(50, gameRef.size.y / 2 - size.y / 2);
@@ -31,17 +35,34 @@ class Bird extends SpriteGroupComponent<BirdMovement> with HasGameRef<FlappyBird
       BirdMovement.down: Sprite(birdDownFlapSprite),
     };
 
+    add(CircleHitbox());
   }
 
   @override
-  void update (double dt) {
+  void update(double dt) {
     super.update(dt);
 
-    position.y  += birdVelocity * dt;
+    position.y += birdVelocity * dt;
+  }
+
+  @override
+  Future<void> onCollisionStart(
+      Set<Vector2> intersectionPoints,
+      PositionComponent other,
+      ) async {
+    super.onCollisionStart(intersectionPoints, other);
+
+    gameOver();
+  }
+
+  /// When the bird collides with a pipe or the ground, the game is over.
+  Future<void> gameOver() async {
+    FlameAudio.play(collision);
+    gameRef.pauseEngine();
   }
 
   /// When the player taps the screen, the bird will move up.
-  void fly() {
+  Future<void> fly() async {
     add(
       MoveByEffect(
         Vector2(0, gravity),
@@ -49,6 +70,7 @@ class Bird extends SpriteGroupComponent<BirdMovement> with HasGameRef<FlappyBird
         onComplete: () => current = BirdMovement.down,
       ),
     );
+    FlameAudio.play(flying);
     current = BirdMovement.up;
   }
 }

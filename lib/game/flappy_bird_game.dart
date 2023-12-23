@@ -9,7 +9,7 @@ import 'package:flappy_bird/components/pipe_group.dart';
 import 'configuration.dart';
 
 /// This is the entry point of your game.
-class FlappyBirdGame extends FlameGame with TapDetector {
+class FlappyBirdGame extends FlameGame with TapDetector, HasCollisionDetection {
   /// The late bird player
   late Bird bird;
   /// Timer to spawn the pipes
@@ -37,7 +37,7 @@ class FlappyBirdGame extends FlameGame with TapDetector {
   }
 
   @override
-  void onTap() {
+  Future<void> onTap() async {
     bird.fly();
   }
 
