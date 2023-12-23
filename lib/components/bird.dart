@@ -1,7 +1,6 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
-import 'package:flame/flame.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flappy_bird/game/assets.dart';
 import 'package:flappy_bird/game/bird_movement.dart';
@@ -15,50 +14,36 @@ class Bird extends SpriteGroupComponent<BirdMovement>
   /// Constructor
   Bird();
 
+  /// The bird's score.
+  int score = 0;
+
   @override
   Future<void> onLoad() async {
-    final birdMidFlapSprite = await Flame.images.load(birdMidFlap);
-    final birdUpFlapSprite = await Flame.images.load(birdUpFlap);
-    final birdDownFlapSprite = await Flame.images.load(birdDownFlap);
+    final birdMidFlapSprite = await gameRef.loadSprite(birdMidFlap);
+    final birdUpFlapSprite = await gameRef.loadSprite(birdUpFlap);
+    final birdDownFlapSprite = await gameRef.loadSprite(birdDownFlap);
+
+    gameRef.bird;
 
     size = Vector2(50, 40);
-
-    /// The bird starts at the middle of the screen.
-    /// The size of the bird is 50x40.
     position = Vector2(50, gameRef.size.y / 2 - size.y / 2);
     current = BirdMovement.normal;
-
-    /// The bird can have 3 states [BirdMovement.up], [BirdMovement.down] and [BirdMovement.normal].
     sprites = {
-      BirdMovement.normal: Sprite(birdMidFlapSprite),
-      BirdMovement.up: Sprite(birdUpFlapSprite),
-      BirdMovement.down: Sprite(birdDownFlapSprite),
+      BirdMovement.normal: birdMidFlapSprite,
+      BirdMovement.up: birdUpFlapSprite,
+      BirdMovement.down: birdDownFlapSprite,
     };
 
     add(CircleHitbox());
   }
 
   @override
-  void update(double dt) {
+  Future<void> update(double dt) async {
     super.update(dt);
-
     position.y += birdVelocity * dt;
-  }
-
-  @override
-  Future<void> onCollisionStart(
-      Set<Vector2> intersectionPoints,
-      PositionComponent other,
-      ) async {
-    super.onCollisionStart(intersectionPoints, other);
-
-    gameOver();
-  }
-
-  /// When the bird collides with a pipe or the ground, the game is over.
-  Future<void> gameOver() async {
-    FlameAudio.play(collision);
-    gameRef.pauseEngine();
+    if (position.y < 1) {
+      gameOver();
+    }
   }
 
   /// When the player taps the screen, the bird will move up.
@@ -72,5 +57,29 @@ class Bird extends SpriteGroupComponent<BirdMovement>
     );
     FlameAudio.play(flying);
     current = BirdMovement.up;
+  }
+
+  @override
+  Future<void> onCollisionStart(
+    Set<Vector2> intersectionPoints,
+    PositionComponent other,
+  ) async {
+    super.onCollisionStart(intersectionPoints, other);
+
+    gameOver();
+  }
+
+  /// Resets the bird to its initial position and score.
+  void reset() {
+    position = Vector2(50, gameRef.size.y / 2 - size.y / 2);
+    score = 0;
+  }
+
+  /// When the bird collides with a pipe or the ground, the game is over.
+  Future<void> gameOver() async {
+    FlameAudio.play(collision);
+    game.isHit = true;
+    gameRef.overlays.add('gameOver');
+    gameRef.pauseEngine();
   }
 }

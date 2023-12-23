@@ -4,8 +4,10 @@
 enum BirdMovement {
   /// The bird is moving up.
   up,
+
   /// The bird is moving down.
   down,
+
   /// The bird is moving normally.
   normal,
 }
