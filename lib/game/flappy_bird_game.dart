@@ -1,4 +1,5 @@
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flappy_bird/components/background.dart';
 import 'package:flappy_bird/components/bird.dart';
@@ -8,7 +9,7 @@ import 'package:flappy_bird/components/pipe_group.dart';
 import 'configuration.dart';
 
 /// This is the entry point of your game.
-class FlappyBirdGame extends FlameGame {
+class FlappyBirdGame extends FlameGame with TapDetector {
   /// The late bird player
   late Bird bird;
   /// Timer to spawn the pipes
@@ -34,4 +35,10 @@ class FlappyBirdGame extends FlameGame {
 
     interval.update(dt);
   }
+
+  @override
+  void onTap() {
+    bird.fly();
+  }
+
 }
